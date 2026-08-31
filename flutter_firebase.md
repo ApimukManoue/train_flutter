@@ -365,7 +365,7 @@ onPressed: () {
 },
 ```
 
-14. form_field_validator: ^1.1.0
+15. ติดตั้ง form_field_validator: ^1.1.0
 
 ```yaml
 dependencies:
@@ -422,7 +422,7 @@ TextFormField(
 `validator:` ต้องการ **ฟังก์ชัน** แต่ `emailValidator` เป็น **object** (MultiValidator) ที่มีเมธอด `call` อยู่ วิธีแก้คือบอก Dart ให้ชัดว่าจะใช้เมธอด `call` โดยเติม `.call` ต่อท้าย object
 
 
-15. สร้างโปรเจ็ค Firebase 
+16. สร้างโปรเจ็ค Firebase 
   ![ไปที่ console](<Screenshot 2026-08-25 093838.png>)
 
   ![สรา้งโปรเจ็ค](<Screenshot 2026-08-25 094358.png>)
