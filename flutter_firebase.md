@@ -276,47 +276,9 @@ Navigator.push(
 );
 ```
 
-10. ทดลองคลิกเลื่อนไปมาแต่ละหน้า
+11. ทดลองคลิกเลื่อนไปมาแต่ละหน้า
 
-11. หน้าจอ RegisterScreen
-
-    - ใส่ Widget ที่จำเป็น พร้อมตกแต่ง (ยังไม่ต้องใส่คุณสมบัติของแต่ละ Widget)
-
-```dart
-body: Center(
-  child: Padding(
-    padding: const EdgeInsets.all(18.0),
-    child: Form(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("อีเมล์", style: TextStyle(fontSize: 20)),
-          TextFormField(),
-          SizedBox(height: 15),
-          Text("รหัสผ่าน", style: TextStyle(fontSize: 20)),
-          TextFormField(),
-          SizedBox(height: 15),
-          SizedBox(
-            width: double.infinity,
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
-                backgroundColor: const Color.fromARGB(240, 64, 19, 213),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                ),
-              ),
-              icon: const Icon(Icons.add),
-              label: const Text('Register', style: TextStyle(fontSize: 16)),
-              onPressed: () {},
-            ),
-          ),
-        ],
-      ),
-    ),
-  ),
-),
-```
+12. หน้าจอ RegisterScreen    
 
     - เก็บการเปลี่ยนสเตทของฟอร์มแบบโกลบอล และให้คีย์ของฟอร์มคือสเตทที่เก็บ
 
@@ -339,7 +301,7 @@ keyboardType: TextInputType.emailAddress,
 obscureText: true,
 ```
 
-12. สร้าง Data Model
+13. สร้าง Data Model
 
     - Model
       - datamodel.dart
@@ -356,7 +318,7 @@ class Profile {
 }
 ```
 
-13. ใช้ datamodel
+14. ใช้ datamodel
 
     - ที่ RegisterScreen เรียกใช้คลาส Profile เพื่อใช้เก็บข้อมูล
 
