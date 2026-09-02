@@ -782,6 +782,75 @@ dependencies:
   
   ```
 
+
+23. เนื่องจาก FlutterTaost ไม่สวย ลองใช้ cherry taost
+
+- ติดตั้ง fluttertoast
+  - เพิ่ม dependencies
+
+  ```yaml
+  dependencies:
+    flutter:
+      sdk: flutter
+    cupertino_icons: ^1.0.8
+    form_field_validator: ^1.1.0
+    firebase_core: ^4.14.0
+    firebase_auth: ^6.6.0
+    fluttertoast: ^10.0.0
+    cherry_toast: ^1.13.0
+
+  ```
+
+ ```dart
+
+onPressed: () async {
+                                if (formkey.currentState!.validate()) {
+                                  // มีเครื่องหมาย ! ด้านหลังเพื่อบอก dart ว่า currentState ไม่ใช่ null แน่นอน
+                                  formkey.currentState!.save();
+                                  print(
+                                    "email = ${profile.email} : password = ${profile.password}",
+                                  );
+                                  try {
+                                    await FirebaseAuth.instance
+                                        .createUserWithEmailAndPassword(
+                                          email: profile.email,
+                                          password: profile.password,
+                                        );
+                                    print("สร้างบัญชีผู้ใช้เรียบร้อยแล้ว");
+                                    // Fluttertoast.showToast(
+                                    //   msg: "สร้างบัญชีผู้ใช้เรียบร้อยแล้ว",
+                                    //   gravity: ToastGravity.CENTER
+                                    // );
+                                    CherryToast.success(
+                                      title: const Text('สำเร็จ'),
+                                      description: const Text('สร้างบัญชีผู้ใช้เรียบร้อยแล้ว'),
+                                    ).show(context);
+                                  } on FirebaseAuthException catch (e) {
+                                      print(e.code);
+                                      String message;
+                                      if (e.code == "email-already-in-use") {
+                                        message = "มีการใช้งานเมล์นี้แล้ว";
+                                      }else if(e.code == "weak-password") {
+                                        message = "รหัสผ่านต้อง 6 ตัวขึ้น";
+                                      }else {
+                                         message = e.message!;
+                                      }
+                                    // Fluttertoast.showToast(
+                                    //   msg: message,
+                                    //   gravity: ToastGravity.CENTER
+                                    // );
+                                    CherryToast.error(
+                                      title: const Text('ผิดพลาด'),
+                                      description: Text(message),
+                                    ).show(context);
+                                  }
+                                  formkey.currentState!.reset(); // เคลียร์ค่า
+                                }
+                              },
+```
+
+
+
 23. ระบบ Login
 
   - ที่ loginscreen.dart ก็อบดีไซส์จาก registerscreen.dart มา
