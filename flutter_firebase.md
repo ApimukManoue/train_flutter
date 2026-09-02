@@ -425,15 +425,14 @@ TextFormField(
 16. สร้างโปรเจ็ค Firebase 
   ![ไปที่ console](<Screenshot 2026-08-25 093838.png>)
 
-  ![สรา้งโปรเจ็ค](<Screenshot 2026-08-25 094358.png>)
+  ![สรา้งโปรเจ็ค](image.png)
 
   ![โปรเจ็คกำลังสรา้ง](<Screenshot 2026-08-25 094504.png>)
 
-  ![ให้เปิดโปรเจค](<Screenshot 2026-08-25 101830.png>)
+  ![ให้เปิดโปรเจค](image-1.png)
 
-  ![เข้าในโปรเจ็คแล้ว](<Screenshot 2026-08-25 102300.png>)
-
-16. ติดตั้ง Firebase Core ใน pubspec.yml
+  
+17. ติดตั้ง Firebase Core ใน pubspec.yml
  
 ```yaml
 dependencies:
@@ -443,7 +442,7 @@ dependencies:
   form_field_validator: ^1.1.0
   firebase_core: ^4.14.0
 ```
-17. เชื่อมแอพกับ Firebase
+18. เชื่อมแอพกับ Firebase
 
   - ที่ Firebase Project คลิ๊ก +Add app
   - เลือก Android 
@@ -451,7 +450,7 @@ dependencies:
   1. Register app  
     
     - เปิด android\app\build.gradle.kts 
-    - ที่บรรทัดที่ 8 namespace = "com.example.flutter_firebase_authen" ก็อบค่าไปวางที่ Android package name ใน Firebase แล้วตั้งชื่อเล่นของแอพเรา ในที่นี้ตั้งเป็น AM_fb_authen
+    - ที่บรรทัดที่ 8 namespace = "com.example.flutter_firebase_authen" ก็อบค่าไปวางที่ Android package name ใน Firebase แล้วตั้งชื่อเล่นของแอพเรา ในที่นี้ตั้งเป็น flutter-firebase
     - กด Register app 
 
   2. Download and then add config file
@@ -490,11 +489,11 @@ dependencies:
     3. sync
         - สำหรับ Flutter ไม่ต้องกด "Sync" ใน Android Studio ก็ได้ แค่รัน flutter clean แล้ว flutter pub get จากนั้น flutter run ตัว Gradle จะ sync ให้เองตอน build
       
-    4. Newt --> Continue to console
+  4. Newt --> Continue to console
 
     ลองรัน Flutter หากไม่มีเออเรอร์อะไรแปลว่าเชื่อมต่อได้แล้ว
 
-18. ใช้ Future Builder เชื่อมต่อ
+19. ใช้ Future Builder เชื่อมต่อ
 
     - ที่ registerscreen.dart ให้เพิ่ม 
 
@@ -590,7 +589,7 @@ dependencies:
 
     ```
 
-19. ติดตั้ง Firebase Auth
+20. ติดตั้ง Firebase Auth
 
   - pub.dev ค้นหา Firebase Auth
 
@@ -606,7 +605,7 @@ dependencies:
     firebase_auth: ^6.6.0
   ```
 
-20. สร้างบัญชีผู้ใช้
+21. สร้างบัญชีผู้ใช้
 
   - ไปที่โปรเจ็ค เลือก Security>Authentication>GetStart
 
@@ -635,6 +634,12 @@ dependencies:
   },
   
   ```
+
+    จะเกิด error <asynchronous suspension> ให้ใส่ asynce await
+
+    
+
+
   - ตรวจจับ error ด้วย try{}catch{} FirebaseAuth แล้วลองใส่ email ซ้ำ 
 
   ```dart
@@ -661,7 +666,7 @@ dependencies:
   อ่านค่าที่ปรินต์ออกมาจะได้ The email address is already in use by another account.
 
 
-21. แจ้งสถานะผ่าน Toast
+22. แจ้งสถานะผ่าน Toast
 
   - ติดตั้ง fluttertoast
   - เพิ่ม dependencies
@@ -706,6 +711,26 @@ dependencies:
   ```
 
   ที่ Debug Console จะเกิด E/flutter (10771): <asynchronous suspension> ให้ใช้ async await
+
+    ```dart
+
+
+  onPressed: () async {  // async
+  if (formkey.currentState!.validate()) {
+    formkey.currentState!.save();
+    print("email = ${profile.email} : password = ${profile.password}",);
+    await FirebaseAuth.instance // await
+    .createUserWithEmailAndPassword(
+      email: profile.email,
+      password: profile.password,
+    );
+
+    formkey.currentState!.reset(); // เคลียร์ค่า
+   }
+  },
+
+  ```
+
 
   ```dart
 
@@ -770,7 +795,7 @@ dependencies:
   
   ```
 
-22. ระบบ Login
+23. ระบบ Login
 
   - ที่ loginscreen.dart ก็อบดีไซส์จาก registerscreen.dart มา
     ทั้ง import ต่างๆ และ โค้ดตั้งแต่ ...
@@ -843,7 +868,7 @@ dependencies:
 
   ```
 
-23. เอาข้อมูลที่ส่งกลับมา มาใช้งานใน Wellcome
+24. เอาข้อมูลที่ส่งกลับมา มาใช้งานใน Wellcome
 
 ```dart
 
