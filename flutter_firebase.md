@@ -635,10 +635,6 @@ dependencies:
   
   ```
 
-    จะเกิด error <asynchronous suspension> ให้ใส่ asynce await
-
-    
-
 
   - ตรวจจับ error ด้วย try{}catch{} FirebaseAuth แล้วลองใส่ email ซ้ำ 
 
@@ -663,10 +659,36 @@ dependencies:
   },
   
   ```
-  อ่านค่าที่ปรินต์ออกมาจะได้ The email address is already in use by another account.
+
+    จะเกิด error <asynchronous suspension> ให้ใส่ asynce await
 
 
-22. แจ้งสถานะผ่าน Toast
+  ```dart
+
+  onPressed: () asynce {      // บอกว่าในนี้มีกสนทำงานแบบ asynce
+    if (formkey.currentState!.validate()) {
+      // มีเครื่องหมาย ! ด้านหลังเพื่อบอก dart ว่า currentState ไม่ใช่ null แน่นอน
+      formkey.currentState!.save();
+       print("email = ${profile.email} : password = ${profile.password}");
+       try {                                    // เมื่อเข้า try
+          await FirebaseAuth.instance           // ให้รอสรัางบัญชีเสร็จก่อน
+            .createUserWithEmailAndPassword(
+              email: profile.email,
+              password: profile.password,
+            );
+          print("สร้างบัญชีผู้ใช้เรียบร้อยแล้ว");        // แล้วปรินต์          
+        } on FirebaseAuthException catch (e) {
+          print(e.message);
+        }
+      formkey.currentState!.reset();
+    }
+  },
+  
+  ```
+  ลองสร้างแอ็คเคาท์ซำ้จะได้ 
+  ค่าที่ปรินต์ออกมาเป็น The email address is already in use by another account.
+
+22. แจ้งสถานะผ่าน Toast / cherry taost
 
   - ติดตั้ง fluttertoast
   - เพิ่ม dependencies
@@ -687,111 +709,76 @@ dependencies:
 
   ```dart
 
-  onPressed: () {
+  onPressed: () async {
     if (formkey.currentState!.validate()) {
-      // มีเครื่องหมาย ! ด้านหลังเพื่อบอก dart ว่า currentState ไม่ใช่ null แน่นอน
+    // มีเครื่องหมาย ! ด้านหลังเพื่อบอก dart ว่า currentState ไม่ใช่ null แน่นอน
       formkey.currentState!.save();
-      // print("email = ${profile.email} : password = ${profile.password}");
-       try {
-          FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-              email: profile.email,
-              password: profile.password,
-            );
-        } on FirebaseAuthException catch (e) {
-          Fluttertoast.showToast(
-            msg: e.message!,
-              gravity: ToastGravity.CENTER
-          );
-        }
-      formkey.currentState!.reset();
-    }
-  },
-  
-  ```
-
-  ที่ Debug Console จะเกิด E/flutter (10771): <asynchronous suspension> ให้ใช้ async await
-
-    ```dart
-
-
-  onPressed: () async {  // async
-  if (formkey.currentState!.validate()) {
-    formkey.currentState!.save();
-    print("email = ${profile.email} : password = ${profile.password}",);
-    await FirebaseAuth.instance // await
-    .createUserWithEmailAndPassword(
-      email: profile.email,
-      password: profile.password,
-    );
-
-    formkey.currentState!.reset(); // เคลียร์ค่า
-   }
-  },
-
-  ```
-
-
-  ```dart
-
-  onPressed: () async{
-    if (formkey.currentState!.validate()) {
-      // มีเครื่องหมาย ! ด้านหลังเพื่อบอก dart ว่า currentState ไม่ใช่ null แน่นอน
-      formkey.currentState!.save();
-      // print("email = ${profile.email} : password = ${profile.password}");
-       try {
-          await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-              email: profile.email,
-              password: profile.password,
-          );
+      print("email = ${profile.email} : password = ${profile.password}",);
+      try {
+        await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+          email: profile.email,
+          password: profile.password,
+        );
+        print("สร้างบัญชีผู้ใช้เรียบร้อยแล้ว");
+        Fluttertoast.showToast(
+          msg: "สร้างบัญชีผู้ใช้เรียบร้อยแล้ว",
+          gravity: ToastGravity.CENTER
+        );
         } on FirebaseAuthException catch (e) {
           print(e.message);
           Fluttertoast.showToast(
-            msg: e.message!,
-              gravity: ToastGravity.CENTER
+            msg: e.message ?? "เกิดข้อผิดพลาด",
+            gravity: ToastGravity.CENTER
           );
         }
-      formkey.currentState!.reset();
-    }
-  },
+        formkey.currentState!.reset(); // เคลียร์ค่า
+      }
+    },
   
   ```
-
+ 
   - ปรับแต่งค่า  message โดยก็อบค่า e.code ที่ Debug Console มาเป็นตัวเทียบ
 
 
   ```dart
 
-  onPressed: () async{
-    if (formkey.currentState!.validate()) {
-      // มีเครื่องหมาย ! ด้านหลังเพื่อบอก dart ว่า currentState ไม่ใช่ null แน่นอน
-      formkey.currentState!.save();
-      // print("email = ${profile.email} : password = ${profile.password}");
-       try {
-          await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-              email: profile.email,
-              password: profile.password,
-          );
-        } on FirebaseAuthException catch (e) {
-          print(e.code);
-          String message;
-          if (e.code == "email-already-in-use") {
-            message = "มีการใช้งานเมล์นี้แล้ว";
-          }else if(e.code == "weak-password") {
-            message = "รหัสผ่านต้อง 6 ตัวขึ้น";
-          }else {
-            message = e.message!;
-          }
-            Fluttertoast.showToast(
-            msg: message,
-            gravity: ToastGravity.CENTER,
-          );
-        }
-      formkey.currentState!.reset();
-    }
-  },
+  onPressed: () async {
+                                if (formkey.currentState!.validate()) {
+                                  // มีเครื่องหมาย ! ด้านหลังเพื่อบอก dart ว่า currentState ไม่ใช่ null แน่นอน
+                                  formkey.currentState!.save();
+                                  print(
+                                    "email = ${profile.email} : password = ${profile.password}",
+                                  );
+                                  try {
+                                    await FirebaseAuth.instance
+                                        .createUserWithEmailAndPassword(
+                                          email: profile.email,
+                                          password: profile.password,
+                                        );
+                                    print("สร้างบัญชีผู้ใช้เรียบร้อยแล้ว");
+                                    Fluttertoast.showToast(
+                                      msg: "สร้างบัญชีผู้ใช้เรียบร้อยแล้ว",
+                                      gravity: ToastGravity.CENTER
+                                    );
+                                  } on FirebaseAuthException catch (e) {
+                                      print(e.code);
+                                      String message;
+                                      if (e.code == "email-already-in-use") {
+                                        message = "มีการใช้งานเมล์นี้แล้ว";
+                                      }else if(e.code == "weak-password") {
+                                        message = "รหัสผ่านต้อง 6 ตัวขึ้น";
+                                      }else {
+                                         message = e.message!;
+                                      }
+                                    Fluttertoast.showToast(
+                                      msg: message,
+                                      gravity: ToastGravity.CENTER
+                                    );
+                                  }
+                                  formkey.currentState!.reset(); // เคลียร์ค่า
+                                }
+                              },
   
   ```
 
