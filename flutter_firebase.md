@@ -849,9 +849,13 @@ onPressed: () async {
                               },
 ```
 
+  - อย่าลืมไปคอมเมนท์ import ... fluttertaost.dart เพราะจะมีเออเรอร์
 
 
-23. ระบบ Login
+
+
+
+24. ระบบ Login
 
   - ที่ loginscreen.dart ก็อบดีไซส์จาก registerscreen.dart มา
     ทั้ง import ต่างๆ และ โค้ดตั้งแต่ ...
@@ -864,6 +868,8 @@ onPressed: () async {
   ```
 
   แล้วแก้
+
+  - ชื่อคลาสทั้งหมดโดยดับเบิ้ลคลิ๊กที่ชื่อแล้วกด Ctrl+D เพื่อให้คลุมทั้งหมด
 
   - เปลี่ยน createUserWithEmailAndPassword ของ FirebaseAuth.instance
     เป้น signInWithEmailAndPassword
@@ -924,32 +930,88 @@ onPressed: () async {
 
   ```
 
-24. เอาข้อมูลที่ส่งกลับมา มาใช้งานใน Wellcome
+25. เอาข้อมูลที่ส่งกลับมา มาใช้งานใน Wellcome
 
 ```dart
 
+    import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
-class Wellcome extends StatelessWidget {
-  Wellcome({super.key});
+class Wellcome extends StatefulWidget {
+  const Wellcome({super.key});
 
-  final auth = FirebaseAuth.instance;
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text('Wellcome')),
-    body: Center(child: Text(
-      '${auth.currentUser?.email} xxx  ${auth.currentUser?.uid}'
-      )),
-  );
+    @override
+  State<Wellcome> createState() => _WellcomeState();
 }
 
+  class _WellcomeState extends State<Wellcome> {
 
+  final auth = FirebaseAuth.instance;    // ต้องประกาศในนี้เพราะต้องการใช้ auth.currentUser?.email และ auth.currentUser?.uid
+
+    @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text('Wellcome')),
+    body: Column(
+      children: [
+        Text('${auth.currentUser?.email}\n ${auth.currentUser?.uid}'),
+      ],
+      ),
+      );
+    }
 
 ```
 
+  - ไม่สามารถดู password ได้ 
 
+
+26. ระบบ Logout
+
+```dart
+
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_firebase/screens/loginscreen.dart';
+
+class Wellcome extends StatefulWidget {
+  const Wellcome({super.key});
+
+    @override
+  State<Wellcome> createState() => _WellcomeState();
+}
+
+  class _WellcomeState extends State<Wellcome> {
+
+  final auth = FirebaseAuth.instance;    // ต้องประกาศในนี้เพราะต้องการใช้ auth.currentUser?.email และ auth.currentUser?.uid
+
+    @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text('Wellcome')),
+    body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('${auth.currentUser?.email}'),
+          SizedBox(height: 20),
+          SizedBox(
+            width: 200,
+            child: ElevatedButton(
+              onPressed: () async {
+                await auth.signOut();
+                Navigator.pushReplacement(
+                 context,
+                 MaterialPageRoute(builder: (ctx) => LoginScreen()),
+                );
+              },
+              child: Text('Sign Out'),
+            ),
+          ),
+        ],
+        ),
+    ),
+      );
+}
+
+```
 
 
 
