@@ -1330,6 +1330,68 @@ class Wellcome extends StatefulWidget {
   
   ``` 
 
+  - แสดงผลข้อมูลที่สดใหม่ด้วย SteamBuilder (Realtime Update)
+    สร้าง DisplayScreen ต่อจาก RecordDataScreen
+
+```dart
+
+  class DisplayScreen extends StatefulWidget {
+  const DisplayScreen({super.key});
+
+  @override
+  State<DisplayScreen> createState() => _DisplayScreenState();
+}
+
+class _DisplayScreenState extends State<DisplayScreen> {
+  
+  String getInitial(String? name) {
+  if (name == null || name.isEmpty) return '?';
+  return name.substring(0, 1).toUpperCase();
+} 
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Display Data"),
+      ),
+      body: 
+      StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('students').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          final students = snapshot.data!.docs;
+          return ListView.builder(
+            itemCount: students.length,
+            itemBuilder: (context, index) {
+              final student = students[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  radius: 30,
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    // child: Text(student['name'].toString().substring(0, 1)), จะ เออเร่อถ้า name เป็น null หรือ empty
+                    // แก้ไขโดยใช้ฟังก์ชัน getInitial ก่อนด้านบน
+                    child: Text(getInitial(student['name'])),
+                  ),
+                ),
+                title: Text(student['name']),
+                subtitle: Text(student['surname']),
+                trailing: Text(student['age'].toString()),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+```
+
+
+
 
 
 
