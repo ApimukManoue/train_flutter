@@ -1013,6 +1013,328 @@ class Wellcome extends StatefulWidget {
 
 ```
 
+27. ส่งข้อมูลไป Cloud firestore
+
+    - ติดตั้ง Cloud firestore 
+
+    ```yaml
+      dependencies:
+        flutter:
+          sdk: flutter
+        cupertino_icons: ^1.0.8
+        form_field_validator: ^1.1.0
+        firebase_core: ^4.14.0
+        firebase_auth: ^6.6.0
+        fluttertoast: ^10.0.0
+        cherry_toast: ^1.13.0
+        cloud_firestore: ^6.9.0
+
+    ```
+
+28. สร้างฐานข้อมูลใน Cloud firestore
+
+  ![เข้าไปในโปรเจคแล้วเลือก firestore](image-3.png)
+
+  ![เลือก edition](image-4.png)
+
+  ![Zone data center](image-5.png)
+
+  ![ในช่วงพัฒนา เลือก Start in test mode ](image-6.png)
+
+29. ลองรันใหม่ หากเกิดเออเรอร์ android sdk version ไปเพิ่มminsdkVersionในไฟล์ android\app\build.gradle.kts
+
+30. บันทึกข้อมูล
+
+  - สร้าง datamodel เพิ่ม 
+
+  ```dart
+    class Student {
+      String name;
+      String surname;
+      int age;
+      String lat;
+      String long;
+
+      Student({required this.name, required this.surname, required this.age, required this.lat, required this.long});  
+  
+  ```
+
+  - ก็อบ registerscreen.dart มาปรับแก้เป็น recorddatascreen.dart
+
+   ```dart
+
+    import 'package:firebase_auth/firebase_auth.dart';
+    import 'package:firebase_core/firebase_core.dart';
+    import 'package:flutter/material.dart';
+    import 'package:flutter_firebase/model/datamodel.dart';
+    import 'package:form_field_validator/form_field_validator.dart';
+    import 'package:cherry_toast/cherry_toast.dart';
+
+    class RecordDataScreen extends StatefulWidget {
+      const RecordDataScreen({super.key});
+      @override
+      State<RecordDataScreen> createState() => _RecordDataScreenState();
+    }
+
+    class _RecordDataScreenState extends State<RecordDataScreen> {
+      final formkey = GlobalKey<FormState>();
+
+      Student student = Student(name: "", surname: "", age: 0, lat: "", long: "");
+
+      final Future<FirebaseApp> firebase = Firebase.initializeApp();
+
+      final nameValidator = MultiValidator([
+        RequiredValidator(errorText: 'คุณไม่ได้กรอก name'),
+      ]);
+
+      final surnameValidator = MultiValidator([
+        RequiredValidator(errorText: 'คุณไม่ได้กรอก surname '),
+      ]);
+      final ageValidator = MultiValidator([
+        RequiredValidator(errorText: 'คุณไม่ได้กรอก age '),
+      ]);
+
+      @override
+      Widget build(BuildContext context) => FutureBuilder(
+        future: firebase,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Scaffold(
+              appBar: AppBar(title: const Text("Error")),
+              body: Center(child: Text("${snapshot.error}")),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            return //... เอา Scaffold ที่เคยคอมเมนท์ไว้มาใส่ในนี้
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xff02021a), Color(0xff072f71), Color(0xff02021a)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Scaffold(
+                // Scaffold มีพื้นเป็นสีดำ
+                backgroundColor: Colors.black.withValues(
+                  alpha: 0.0,
+                ), // ทำให้พื้นหลังของ body Scaffold โปร่งใส
+                body: Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Center(
+                    child: Container(
+                      width: double.infinity,
+                      height: 600,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                      child: Form(
+                        key: formkey,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                            children: [
+                              Text("name", style: TextStyle(fontSize: 20)),
+                              TextFormField(
+                                onSaved: (e) {},
+                                validator: nameValidator.call,
+                              ),
+
+                              SizedBox(height: 15),
+                              Text("surname", style: TextStyle(fontSize: 20)),
+                              TextFormField(
+                                onSaved: (e) {},
+                                validator: surnameValidator.call,
+                              ),
+
+                              SizedBox(height: 15),
+                              Text("age", style: TextStyle(fontSize: 20)),
+                              TextFormField(
+                                onSaved: (e) {},
+                                validator: ageValidator.call,
+                              ),
+
+                              SizedBox(height: 15),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: TextButton.icon(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(
+                                      255,
+                                      93,
+                                      10,
+                                      245,
+                                    ),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero,
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.save, size: 30),
+                                  label: const Text(
+                                    "บันทึกข้อมูล",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (formkey.currentState!.validate()) {
+                                      formkey.currentState!.save();
+
+                                      formkey.currentState!.reset(); // เคลียร์ค่า
+                                    }
+                                  },
+                                ),
+                              ),
+
+                              SizedBox(height: 15),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: TextButton.icon(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(
+                                      255,
+                                      93,
+                                      10,
+                                      245,
+                                    ),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero,
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.arrow_back, size: 30),
+                                  label: const Text(
+                                    "กลับหน้าหลัก",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        },
+      );
+    }
+ 
+  
+  ``` 
+
+
+  - เข้าถึงตาราง (collection หากไม่มีจะสร้างขึนเอง)
+
+  ```dart
+
+    import 'package:cloud_firestore/cloud_firestore.dart';  // <--
+
+    //...
+
+    class _RecordDataScreenState extends State<RecordDataScreen> {
+      final formkey = GlobalKey<FormState>();
+
+      Student student = Student(name: "", surname: "", age: 0, lat: "", long: "");
+
+      final Future<FirebaseApp> firebase = Firebase.initializeApp();
+      CollectionReference students = FirebaseFirestore.instance.collection('students'); // <--
+
+      
+
+      //...
+    }
+ 
+  
+  ``` 
+  - บันทึกข้อมูล
+  ```dart
+
+    import 'package:cloud_firestore/cloud_firestore.dart';  // <--
+    //...
+
+    children: [
+      Text("name", style: TextStyle(fontSize: 20)),
+      TextFormField(
+        onSaved: (e) {
+        student.name = e!;
+      },
+        validator: nameValidator.call,
+      ),
+
+      SizedBox(height: 15),
+      Text("surname", style: TextStyle(fontSize: 20)),
+      TextFormField(
+        onSaved: (e) {
+          student.surname = e!;
+        },
+        validator: surnameValidator.call,
+      ),
+
+      SizedBox(height: 15),
+      Text("age", style: TextStyle(fontSize: 20)),
+      TextFormField(
+        onSaved: (e) {
+                              student.age = int.parse(e!);
+                            },
+                            validator: ageValidator.call,
+                          ),
+
+    //...
+
+    onPressed: () {
+      if (formkey.currentState!.validate()) {
+      formkey.currentState!.save();
+
+        students.add({
+          'name': student.name,
+          'surname': student.surname,
+          'age': student.age,
+          'lat': student.lat,
+          'long': student.long,
+        }).then((value) {
+          CherryToast.success(
+            title: Text("บันทึกข้อมูลสำเร็จ"),
+            description: const Text('บันทึกข้อมูลเรียบร้อยแล้ว'),
+            actionHandler: () {},
+          ).show(context);
+        }).catchError((error) {
+          CherryToast.error(
+          title: Text("เกิดข้อผิดพลาด"),
+          description: const Text('เกิดข้อผิดพลาดในการบันทึกข้อมูล'),
+           actionHandler: () {},
+          ).show(context);
+      });
+      formkey.currentState!.reset(); // เคลียร์ค่า
+    }
+  },
+      //...
+    }
+ 
+  
+  ``` 
+
+
+
+
+
+
 
 
 
